@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: app-escritorio-backend
+  profiles:
+    active: dev
+
+server:
+  port: 8080
