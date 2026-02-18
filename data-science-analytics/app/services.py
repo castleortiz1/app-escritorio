@@ -5,6 +5,9 @@ from statistics import mean
 from .schemas import (
     DemandPredictionRequest,
     DemandPredictionResponse,
+    DemandPrioritizationRequest,
+    DemandPrioritizationResponse,
+    DemandSegment,
     ReorderRequest,
     ReorderResponse,
     SlowMoverItem,
@@ -60,4 +63,61 @@ def recommend_reorder(request: ReorderRequest) -> ReorderResponse:
         punto_reorden=max(punto_reorden, 0),
         cantidad_recomendada=recomendado,
         requiere_reorden=requiere,
+    )
+
+
+def prioritize_products_by_demand(
+    request: DemandPrioritizationRequest,
+) -> DemandPrioritizationResponse:
+    products_with_demand = sorted(
+        [
+            (producto, round(_daily_average(producto), 2))
+            for producto in request.productos
+        ],
+        key=lambda item: item[1],
+        reverse=True,
+    )
+
+    top_count = min(request.top_n_mas_vendidos, len(products_with_demand))
+    top_products = products_with_demand[:top_count]
+    remaining_products = products_with_demand[top_count:]
+
+    lower_threshold = 0.0
+    if remaining_products:
+        demandas_remanentes = sorted(demanda for _, demanda in remaining_products)
+        index_baja = max(round((len(demandas_remanentes) - 1) * 0.33), 0)
+        lower_threshold = demandas_remanentes[index_baja]
+
+    intermedia: list[DemandSegment] = []
+    baja: list[DemandSegment] = []
+
+    for producto, demanda in remaining_products:
+        is_low_demand = demanda <= lower_threshold
+        target = baja if is_low_demand else intermedia
+        clasificacion = "baja_demanda" if is_low_demand else "demanda_intermedia"
+        sugerencia = "sugerir_ofertas_o_liquidacion" if is_low_demand else "venta_normal"
+        target.append(
+            DemandSegment(
+                producto_id=producto.producto_id,
+                demanda_estimada_diaria=demanda,
+                clasificacion=clasificacion,
+                sugerencia=sugerencia,
+            )
+        )
+
+    top = [
+        DemandSegment(
+            producto_id=producto.producto_id,
+            demanda_estimada_diaria=demanda,
+            clasificacion="alta_demanda",
+            sugerencia="mostrar_inicialmente",
+        )
+        for producto, demanda in top_products
+    ]
+
+    return DemandPrioritizationResponse(
+        total_productos=len(products_with_demand),
+        top_mas_vendidos=top,
+        demanda_intermedia=intermedia,
+        baja_demanda_ofertas_liquidacion=baja,
     )

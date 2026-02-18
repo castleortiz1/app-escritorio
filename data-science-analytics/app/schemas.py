@@ -38,6 +38,25 @@ class SlowMoversResponse(BaseModel):
     slow_movers: List[SlowMoverItem]
 
 
+class DemandPrioritizationRequest(BaseModel):
+    top_n_mas_vendidos: int = Field(default=33, ge=1, le=500)
+    productos: List[DemandPredictionRequest] = Field(default_factory=list)
+
+
+class DemandSegment(BaseModel):
+    producto_id: str
+    demanda_estimada_diaria: float
+    clasificacion: str
+    sugerencia: str
+
+
+class DemandPrioritizationResponse(BaseModel):
+    total_productos: int
+    top_mas_vendidos: List[DemandSegment]
+    demanda_intermedia: List[DemandSegment]
+    baja_demanda_ofertas_liquidacion: List[DemandSegment]
+
+
 class ReorderRequest(BaseModel):
     producto_id: str
     stock_actual: int = Field(ge=0)

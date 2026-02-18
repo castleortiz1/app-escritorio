@@ -29,6 +29,7 @@ uvicorn app.main:app --reload --port 8090
 - `GET /health`
 - `POST /api/v1/predictions/demand`
 - `POST /api/v1/insights/slow-movers`
+- `POST /api/v1/insights/demand-prioritization`
 - `POST /api/v1/recommendations/reorder`
 
 ## Ejecutar pruebas
