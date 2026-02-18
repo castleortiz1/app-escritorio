@@ -3,6 +3,7 @@ package com.appescritorio.backend.controller;
 import com.appescritorio.backend.model.Proveedor;
 import com.appescritorio.backend.service.ProveedorService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,17 +37,20 @@ public class ProveedorController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     public Proveedor crear(@RequestBody Proveedor proveedor) {
         return proveedorService.crear(proveedor);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public Proveedor actualizar(@PathVariable Long id, @RequestBody Proveedor proveedor) {
         return proveedorService.actualizar(id, proveedor);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void eliminar(@PathVariable Long id) {
         proveedorService.eliminar(id);

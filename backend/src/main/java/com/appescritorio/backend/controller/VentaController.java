@@ -3,6 +3,7 @@ package com.appescritorio.backend.controller;
 import com.appescritorio.backend.model.Venta;
 import com.appescritorio.backend.service.VentaService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,17 +37,20 @@ public class VentaController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     public Venta crear(@RequestBody Venta venta) {
         return ventaService.crear(venta);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public Venta actualizar(@PathVariable Long id, @RequestBody Venta venta) {
         return ventaService.actualizar(id, venta);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void eliminar(@PathVariable Long id) {
         ventaService.eliminar(id);

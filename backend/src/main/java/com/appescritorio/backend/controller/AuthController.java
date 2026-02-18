@@ -2,11 +2,13 @@ package com.appescritorio.backend.controller;
 
 import com.appescritorio.backend.controller.dto.AuthResponse;
 import com.appescritorio.backend.controller.dto.LoginRequest;
+import com.appescritorio.backend.controller.dto.RefreshTokenRequest;
 import com.appescritorio.backend.controller.dto.RegisterRequest;
 import com.appescritorio.backend.service.AuthService;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,7 +36,13 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(IllegalArgumentException.class)
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthResponse> refresh(@RequestBody RefreshTokenRequest request) {
+        AuthResponse response = authService.refresh(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> handleIllegalArgument(IllegalArgumentException ex) {
         return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
     }

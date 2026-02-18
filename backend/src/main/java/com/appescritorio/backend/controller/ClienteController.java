@@ -3,6 +3,7 @@ package com.appescritorio.backend.controller;
 import com.appescritorio.backend.model.Cliente;
 import com.appescritorio.backend.service.ClienteService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,17 +37,20 @@ public class ClienteController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     public Cliente crear(@RequestBody Cliente cliente) {
         return clienteService.crear(cliente);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public Cliente actualizar(@PathVariable Long id, @RequestBody Cliente cliente) {
         return clienteService.actualizar(id, cliente);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void eliminar(@PathVariable Long id) {
         clienteService.eliminar(id);
