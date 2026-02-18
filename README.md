@@ -3,6 +3,7 @@
 Documento de arquitectura y propuesta técnica:
 
 - [Sistema de Inventario para Pequeños Negocios](docs/arquitectura-sistema-inventario.md)
+- [Servicio de Data Science y Analytics](data-science-analytics/README.md)
 
 ## Backend (Spring Boot + Maven)
 
