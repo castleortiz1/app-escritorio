@@ -1,49 +1,57 @@
 # app-escritorio
 
-Documento de arquitectura y propuesta técnica:
+Repositorio principal del sistema **app-escritorio**, organizado como monorepo con servicios independientes.
+
+## Componentes
+
+- `backend/`: API principal (Spring Boot + Maven + JPA + seguridad JWT).
+- `microservicio-alertas/`: microservicio de alertas de inventario (Spring Boot + Maven).
+- `data-science-analytics/`: servicio de predicción e insights (FastAPI + Python).
+- `docs/`: documentación de arquitectura y propuesta técnica.
+
+## Documentación relacionada
 
 - [Sistema de Inventario para Pequeños Negocios](docs/arquitectura-sistema-inventario.md)
-- [Servicio de Data Science y Analytics](data-science-analytics/README.md)
+- [README del backend](backend/README.md)
+- [README de Data Science y Analytics](data-science-analytics/README.md)
+- [README de microservicio de alertas](microservicio-alertas/README.md)
 
-## Backend (Spring Boot + Maven)
+## Arranque rápido de cada servicio
 
-Se inicializó un backend en `backend/` con:
-
-- Java 17
-- Spring Boot 3
-- Maven
-- JPA + Spring Web
-- Perfil `dev` usando H2 en memoria
-- Perfil `prod` usando PostgreSQL
-
-### Ejecutar en desarrollo (H2)
+### Backend
 
 ```bash
 cd backend
 mvn spring-boot:run
 ```
 
-### Ejecutar en producción (PostgreSQL)
+Disponible por defecto en `http://localhost:8080`.
 
-```bash
-cd backend
-SPRING_PROFILES_ACTIVE=prod DB_URL=jdbc:postgresql://localhost:5432/appescritorio DB_USER=postgres DB_PASSWORD=postgres mvn spring-boot:run
-```
-
-
-## Microservicio independiente: Alertas de Inventario
-
-Se agregó un microservicio independiente en `microservicio-alertas/` (Spring Boot + Maven) que brinda:
-
-- Evaluación de stock bajo.
-- Generación de alertas con severidad (`ALTA` / `CRITICA`).
-- Endpoint de salud para monitoreo.
-
-### Ejecutar
+### Microservicio de alertas
 
 ```bash
 cd microservicio-alertas
 mvn spring-boot:run
 ```
 
-> Corre por defecto en `http://localhost:8081`.
+Disponible por defecto en `http://localhost:8081`.
+
+### Data Science y Analytics
+
+```bash
+cd data-science-analytics
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8090
+```
+
+Disponible por defecto en `http://localhost:8090`.
+
+## Ejecución de pruebas
+
+```bash
+cd backend && mvn test
+cd ../microservicio-alertas && mvn test
+cd ../data-science-analytics && pytest
+```

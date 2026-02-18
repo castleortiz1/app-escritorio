@@ -1,19 +1,19 @@
 # Microservicio de Alertas (Spring Boot)
 
-Este microservicio forma parte de **app-escritorio** y está desarrollado en:
+Microservicio independiente para evaluación de inventario y generación de alertas de stock bajo.
 
-- **Java 17**
-- **Spring Boot 3**
-- **Maven**
+## Stack
 
-Su objetivo es evaluar niveles de inventario y generar alertas de stock bajo para que el backend principal pueda tomar acciones.
+- Java 17
+- Spring Boot 3
+- Maven
 
 ## Funcionalidades
 
-- Evalúa una lista de productos enviada por el backend principal.
-- Genera alertas cuando el stock está por debajo del mínimo configurado.
-- Devuelve severidad de alerta (`ALTA` o `CRITICA`).
-- Expone un endpoint de salud para monitoreo.
+- Evalúa una lista de productos enviada por otro servicio.
+- Genera alertas cuando el stock está por debajo del mínimo.
+- Define severidad de alerta (`ALTA` o `CRITICA`).
+- Expone endpoint de salud para monitoreo.
 
 ## Endpoints
 
@@ -40,6 +40,9 @@ mvn spring-boot:run
 
 Por defecto corre en `http://localhost:8081`.
 
-## Nota
+## Pruebas
 
-Tanto el backend principal (`backend/`) como este microservicio (`microservicio-alertas/`) están implementados con **Java + Spring Boot**.
+```bash
+cd microservicio-alertas
+mvn test
+```

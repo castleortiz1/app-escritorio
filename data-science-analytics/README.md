@@ -1,18 +1,20 @@
 # Data Science y Analytics Service
 
-Microservicio inicial para cubrir capacidades de **Data Science y Analytics** del sistema.
-
-## Capacidades incluidas
-
-- Predicción de demanda por producto y horizonte.
-- Detección de productos de baja rotación (*slow movers*).
-- Recomendación básica de reorden.
+Microservicio para capacidades de analítica e inteligencia de inventario.
 
 ## Stack
 
 - Python 3.11+
 - FastAPI
 - Pydantic
+- Pytest
+
+## Capacidades incluidas
+
+- Predicción de demanda por producto y horizonte.
+- Detección de productos de baja rotación (*slow movers*).
+- Priorización de productos por demanda proyectada.
+- Recomendación básica de reorden.
 
 ## Ejecutar localmente
 
@@ -24,6 +26,8 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8090
 ```
 
+Servicio disponible en `http://localhost:8090`.
+
 ## Endpoints
 
 - `GET /health`
@@ -31,6 +35,10 @@ uvicorn app.main:app --reload --port 8090
 - `POST /api/v1/insights/slow-movers`
 - `POST /api/v1/insights/demand-prioritization`
 - `POST /api/v1/recommendations/reorder`
+
+Documentación interactiva (Swagger UI):
+
+- `http://localhost:8090/docs`
 
 ## Ejecutar pruebas
 
