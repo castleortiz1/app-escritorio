@@ -2,21 +2,27 @@ package com.appescritorio.backend.service;
 
 import com.appescritorio.backend.controller.dto.AuthResponse;
 import com.appescritorio.backend.controller.dto.LoginRequest;
+import com.appescritorio.backend.controller.dto.RefreshTokenRequest;
 import com.appescritorio.backend.controller.dto.RegisterRequest;
 import com.appescritorio.backend.model.AppUser;
 import com.appescritorio.backend.model.UserRole;
 import com.appescritorio.backend.repository.AppUserRepository;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import com.appescritorio.backend.security.JwtService;
+import io.jsonwebtoken.JwtException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
 
     private final AppUserRepository appUserRepository;
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    public AuthService(AppUserRepository appUserRepository) {
+    public AuthService(AppUserRepository appUserRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.appUserRepository = appUserRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     public AuthResponse register(RegisterRequest request) {
@@ -34,7 +40,7 @@ public class AuthService {
         AppUser user = new AppUser(username, passwordEncoder.encode(password), UserRole.USER);
         appUserRepository.save(user);
 
-        return new AuthResponse("usuario registrado", user.getUsername(), user.getRole().name());
+        return buildAuthResponse("usuario registrado", user);
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -52,7 +58,27 @@ public class AuthService {
             throw new IllegalArgumentException("credenciales inválidas");
         }
 
-        return new AuthResponse("login exitoso", user.getUsername(), user.getRole().name());
+        return buildAuthResponse("login exitoso", user);
+    }
+
+    public AuthResponse refresh(RefreshTokenRequest request) {
+        String refreshToken = sanitize(request.getRefreshToken());
+        if (refreshToken == null) {
+            throw new IllegalArgumentException("refreshToken es obligatorio");
+        }
+
+        try {
+            if (!jwtService.isRefreshTokenValid(refreshToken)) {
+                throw new IllegalArgumentException("refresh token inválido");
+            }
+            String username = jwtService.extractUsernameFromRefreshToken(refreshToken);
+            AppUser user = appUserRepository.findByUsername(username)
+                    .orElseThrow(() -> new IllegalArgumentException("usuario no encontrado"));
+
+            return buildAuthResponse("token actualizado", user);
+        } catch (JwtException ex) {
+            throw new IllegalArgumentException("refresh token inválido");
+        }
     }
 
     public void ensureAdminUser(String username, String password) {
@@ -66,6 +92,12 @@ public class AuthService {
 
         AppUser admin = new AppUser(username.trim(), passwordEncoder.encode(password.trim()), UserRole.ADMIN);
         appUserRepository.save(admin);
+    }
+
+    private AuthResponse buildAuthResponse(String message, AppUser user) {
+        String accessToken = jwtService.generateAccessToken(user.getUsername(), user.getRole());
+        String refreshToken = jwtService.generateRefreshToken(user.getUsername());
+        return new AuthResponse(message, user.getUsername(), user.getRole().name(), accessToken, refreshToken);
     }
 
     private String sanitize(String value) {

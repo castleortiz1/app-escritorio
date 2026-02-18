@@ -10,5 +10,17 @@ server:
 app:
   security:
     admin:
-      username: ${APP_ADMIN_USERNAME:admin}
-      password: ${APP_ADMIN_PASSWORD:admin123}
+      username: ${APP_ADMIN_USERNAME:}
+      password: ${APP_ADMIN_PASSWORD:}
+    jwt:
+      access-secret: ${APP_JWT_ACCESS_SECRET:}
+      refresh-secret: ${APP_JWT_REFRESH_SECRET:}
+      access-expiration-ms: ${APP_JWT_ACCESS_EXPIRATION_MS:900000}
+      refresh-expiration-ms: ${APP_JWT_REFRESH_EXPIRATION_MS:604800000}
+    cors:
+      allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:3000}
+      allowed-methods: ${APP_CORS_ALLOWED_METHODS:GET,POST,PUT,DELETE,OPTIONS}
+      allowed-headers: ${APP_CORS_ALLOWED_HEADERS:Authorization,Content-Type}
+    rate-limit:
+      login-max-attempts: ${APP_LOGIN_MAX_ATTEMPTS:5}
+      login-window-ms: ${APP_LOGIN_WINDOW_MS:60000}

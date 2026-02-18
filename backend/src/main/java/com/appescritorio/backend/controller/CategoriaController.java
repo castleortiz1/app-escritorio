@@ -3,6 +3,7 @@ package com.appescritorio.backend.controller;
 import com.appescritorio.backend.model.Categoria;
 import com.appescritorio.backend.service.CategoriaService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,17 +37,20 @@ public class CategoriaController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     public Categoria crear(@RequestBody Categoria categoria) {
         return categoriaService.crear(categoria);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public Categoria actualizar(@PathVariable Long id, @RequestBody Categoria categoria) {
         return categoriaService.actualizar(id, categoria);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void eliminar(@PathVariable Long id) {
         categoriaService.eliminar(id);
