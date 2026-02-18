@@ -2,7 +2,9 @@ package com.appescritorio.backend.service;
 
 import com.appescritorio.backend.model.Categoria;
 import com.appescritorio.backend.repository.CategoriaRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -21,5 +23,21 @@ public class CategoriaService {
 
     public Categoria crear(Categoria categoria) {
         return categoriaRepository.save(categoria);
+    }
+
+    public Categoria obtenerPorId(Long id) {
+        return categoriaRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Categoria no encontrada"));
+    }
+
+    public Categoria actualizar(Long id, Categoria categoria) {
+        Categoria categoriaExistente = obtenerPorId(id);
+        categoriaExistente.setNombre(categoria.getNombre());
+        return categoriaRepository.save(categoriaExistente);
+    }
+
+    public void eliminar(Long id) {
+        Categoria categoria = obtenerPorId(id);
+        categoriaRepository.delete(categoria);
     }
 }
