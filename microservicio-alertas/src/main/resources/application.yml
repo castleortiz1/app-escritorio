@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: microservicio-alertas
+
+server:
+  port: 8081
