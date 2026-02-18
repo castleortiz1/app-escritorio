@@ -3,12 +3,19 @@ from fastapi import FastAPI
 from .schemas import (
     DemandPredictionRequest,
     DemandPredictionResponse,
+    DemandPrioritizationRequest,
+    DemandPrioritizationResponse,
     ReorderRequest,
     ReorderResponse,
     SlowMoversRequest,
     SlowMoversResponse,
 )
-from .services import detect_slow_movers, predict_demand, recommend_reorder
+from .services import (
+    detect_slow_movers,
+    predict_demand,
+    prioritize_products_by_demand,
+    recommend_reorder,
+)
 
 app = FastAPI(
     title="Data Science y Analytics Service",
@@ -35,3 +42,8 @@ def slow_movers(payload: SlowMoversRequest) -> SlowMoversResponse:
 @app.post("/api/v1/recommendations/reorder", response_model=ReorderResponse)
 def reorder(payload: ReorderRequest) -> ReorderResponse:
     return recommend_reorder(payload)
+
+
+@app.post("/api/v1/insights/demand-prioritization", response_model=DemandPrioritizationResponse)
+def demand_prioritization(payload: DemandPrioritizationRequest) -> DemandPrioritizationResponse:
+    return prioritize_products_by_demand(payload)
